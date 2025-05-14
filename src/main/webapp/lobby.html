@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Lobby | Tic-Tac-Toe</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Offene Räume</h1>
+    <ul id="roomList">
+      <!-- Beispiel-Eintrag -->
+      <li>
+        Raum #123
+        <button class="joinBtn" data-id="123">Beitreten</button>
+        <span style="color:green">(A) Klick → Join-Modal öffnen</span>
+      </li>
+      <!-- Weitere Räume dynamisch … -->
+    </ul>
+    <button id="newGameBtn">Neue Partie erstellen</button>
+    <span style="color:green">(B) Klick → Create-Modal öffnen</span>
+    <br/>
+    <a href="#" id="logoutLink">Abmelden</a>
+    <span style="color:green">(C) Klick → Logout-Flow</span>
+    <br/>
+    <button id="deleteAccountBtn">Account löschen</button>
+    <span style="color:green">(D) Klick → Delete-Modal öffnen</span>
+
+    <!-- Create-Room-Modal -->
+    <div class="modal" id="createRoomModal" hidden>
+      <div class="modal-content">
+        <h3>Raum erstellen</h3>
+        <label>Raum-Passwort (4–12 Ziffern):</label>
+        <input type="password" id="createRoomPw" pattern="\d{4,12}" />
+        <span style="color:green">(C) Eingabe & JS-Validation</span>
+        <button id="confirmCreateBtn">Erstellen</button>
+        <span style="color:green">(D) Klick → fetch()</span>
+        <button id="cancelCreateBtn">Abbrechen</button>
+      </div>
+    </div>
+
+    <!-- Join-Room-Modal -->
+    <div class="modal" id="joinRoomModal" hidden>
+      <div class="modal-content">
+        <h3>Raum beitreten</h3>
+        <label>Raum-Passwort:</label>
+        <input type="password" id="joinRoomPw" />
+        <span style="color:green">(E) Eingabe</span>
+        <button id="confirmJoinBtn">Beitreten</button>
+        <span style="color:green">(F) Klick → fetch()</span>
+        <button id="cancelJoinBtn">Abbrechen</button>
+      </div>
+    </div>
+
+    <!-- Delete-Account-Modal -->
+    <div class="modal" id="deleteAccountModal" hidden>
+      <div class="modal-content">
+        <h3>Account löschen</h3>
+        <p>Möchten Sie Ihren Account wirklich dauerhaft löschen?</p>
+        <button id="confirmDeleteBtn">Ja, Account löschen</button>
+        <span style="color:green">(G) Klick → fetch() → Redirect → register.html</span>
+        <button id="cancelDeleteBtn">Nein, abbrechen</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

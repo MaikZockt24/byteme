@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Tic-Tac-Toe</title>
+</head>
+<body>
+  <div class="container">
+    <h1>App-Logo</h1>
+    <form id="loginForm" action="/login" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" />
+      <span style="color:green">(1) Eingabe</span>
+      <br/>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" />
+      <span style="color:green">(2) Eingabe</span>
+      <br/>
+      <button type="submit" id="loginBtn">Login</button>
+      <span style="color:green">(3) Klick → JS-Validation</span>
+      <span style="color:blue">(6) HTTP POST /login → LoginController.authenticate()</span>
+    </form>
+    <br/>
+    <a href="register.html" id="toRegister">Registrieren</a>
+    <span style="color:green">(4)</span>
+    <br/>
+    <a href="forgot.html" id="toForgot">Passwort vergessen?</a>
+    <span style="color:green">(5)</span>
+  </div>
+</body>
+</html>

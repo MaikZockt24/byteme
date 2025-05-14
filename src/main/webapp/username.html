@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Username & Avatar | Tic-Tac-Toe</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Willkommen! Wähle Username & Avatar</h1>
+    <form id="usernameForm" action="/username" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" />
+      <span style="color:green">(1) Eingabe</span>
+      <br/>
+      <button type="button" id="chooseAvatarBtn">Avatar auswählen</button>
+      <span style="color:green">(2) Klick → Overlay</span>
+      <br/>
+      <button type="submit" id="confirmUsernameBtn">Bestätigen</button>
+      <span style="color:green">(3) Klick</span>
+      <span style="color:blue">(5) HTTP POST /username → UserController.setUsername()</span>
+    </form>
+    <br/>
+    <a href="login.html" id="toLogin">Direkt zum Login</a>
+    <span style="color:green">(4)</span>
+
+    <!-- Avatar-Overlay -->
+    <div id="avatarOverlay" hidden>
+      <h3>Avatar-Editor</h3>
+      <!-- Optionen: Form, Augen, Mund, Farben, Hintergründe -->
+      <span style="color:green">(A) Klick wählt Option und aktualisiert Preview</span>
+    </div>
+  </div>
+</body>
+</html>

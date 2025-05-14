@@ -1,0 +1,55 @@
+grails:
+  profile: web
+  codegen:
+    defaultPackage: byteme
+  spring:
+    transactionManagement:
+      proxies: false
+info:
+  app:
+    name: byteme
+
+# -------------------------------------------
+# Universelle DataSource-Einstellungen
+# -------------------------------------------
+dataSource:
+  pooled: true
+  jmxExport: true
+  driverClassName: org.postgresql.Driver
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  url: jdbc:postgresql://iu.servicecluster.de:5432/byteme
+  username: iu
+  password: iu
+  properties:
+    # Connection-Pool
+    maxActive: 50
+    minIdle: 5
+    maxIdle: 25
+    initialSize: 5
+    # Validation
+    validationQuery: SELECT 1
+    testOnBorrow: true
+    testOnReturn: false
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+
+# -------------------------------------------
+# Umwelt-spezifische Settings
+# -------------------------------------------
+environments:
+  development:
+    dataSource:
+      dbCreate: update       # Schema automatisch anpassen
+      logSql: true
+  test:
+    dataSource:
+      dbCreate: update
+      logSql: false
+  production:
+    dataSource:
+      dbCreate: none         # Nie Schema in Prod ändern
+      logSql: false
+      properties:
+        jmxEnabled: true
+        # evtl. weitergehende Prod-Pool-Tuning-Params

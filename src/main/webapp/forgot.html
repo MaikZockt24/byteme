@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Passwort zurücksetzen | Tic-Tac-Toe</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Passwort ändern</h1>
+    <form id="forgotForm" action="/forgot" method="post">
+      <label for="email">E-Mail:</label>
+      <input type="email" id="email" name="email" />
+      <span style="color:green">(1) Eingabe der registrierten E-Mail</span>
+      <br/>
+      <label for="newPassword">Neues Passwort:</label>
+      <input type="password" id="newPassword" name="newPassword" />
+      <span style="color:green">(2) Eingabe neues Passwort</span>
+      <br/>
+      <label for="repeatPassword">Passwort wiederholen:</label>
+      <input type="password" id="repeatPassword" name="repeatPassword" />
+      <span style="color:green">(3) Passwort wiederholen</span>
+      <br/>
+      <button type="submit" id="resetBtn">Passwort ändern</button>
+      <span style="color:green">(4) Klick → JS-Validation</span>
+      <span style="color:blue">(6) HTTP POST /forgot → ForgotPasswordController.updatePassword()</span>
+    </form>
+    <br/>
+    <a href="login.html" id="toLogin">Zurück zum Login</a>
+    <span style="color:green">(5) Link zurück</span>
+  </div>
+</body>
+</html>

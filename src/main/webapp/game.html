@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Spielraum | Tic-Tac-Toe</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span>Spiel-ID: <b id="gameId">555</b></span>
+      <span>Countdown: <b id="timer">01:30</b></span>
+    </header>
+    <section class="chat">
+      <h2>Chat</h2>
+      <ul id="chatList"></ul>
+      <input id="chatInput" />
+      <button id="sendBtn">Send</button>
+      <span style="color:green">(3) ws.send({type:'chat',text})</span>
+    </section>
+    <section class="board">
+      <h2>Tic-Tac-Toe Board</h2>
+      <div class="grid">
+        <div class="cell" data-r="0" data-c="0"></div>
+        <div class="cell" data-r="0" data-c="1"></div>
+        <div class="cell" data-r="0" data-c="2"></div>
+        <div class="cell" data-r="1" data-c="0"></div>
+        <div class="cell" data-r="1" data-c="1"></div>
+        <div class="cell" data-r="1" data-c="2"></div>
+        <div class="cell" data-r="2" data-c="0"></div>
+        <div class="cell" data-r="2" data-c="1"></div>
+        <div class="cell" data-r="2" data-c="2"></div>
+      </div>
+      <div id="turnDisplay">X ist dran</div>
+      <span style="color:green">(1) Klick auf Zelle → ws.send({type:'move',cell:{r,c}})</span>
+    </section>
+    <button id="newRoundBtn" disabled hidden>Neue Runde</button>
+    <span style="color:green">(4) erscheint nach Spielende</span>
+
+    <!-- Spielende-Overlay -->
+    <div id="gameOverOverlay" hidden>
+      <h3 id="resultText">X hat gewonnen!</h3>
+      <button id="resetBtn">Neu starten</button>
+      <span style="color:green">(4) fetch('/game/555/reset',{method:'POST'})</span>
+      <button id="lobbyBtn">Zur Lobby</button>
+      <span style="color:green">(5) window.location.href = 'lobby.html'</span>
+    </div>
+  </div>
+</body>
+</html>
