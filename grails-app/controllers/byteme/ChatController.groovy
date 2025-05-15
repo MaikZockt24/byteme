@@ -5,14 +5,20 @@ import grails.converters.JSON
 class ChatController {
     ChatService chatService
 
-    def list(Long roomId) {
-        Room r = Room.get(roomId)
-        render chatService.listForRoom(r) as JSON
+    static allowedMethods = [list:"POST", post:"POST"]
+
+    // POST /chat/list   { roomId }
+    def list() {
+        def j = request.JSON
+        Room r = Room.get(j.roomId as Long)
+        render(chatService.listForRoom(r)) as JSON
     }
 
-    def post(Long roomId) {
-        Room r = Room.get(roomId)
-        Chat c = chatService.postMessage(r, session.user, params.text)
-        render c as JSON
+    // POST /chat/post   { roomId, text }
+    def post() {
+        def j = request.JSON
+        Room r = Room.get(j.roomId as Long)
+        Chat c = chatService.postMessage(r, session.user, j.text)
+        render(c) as JSON
     }
 }

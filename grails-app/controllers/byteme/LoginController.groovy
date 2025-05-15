@@ -1,20 +1,21 @@
 package byteme
 
+import grails.converters.JSON
+
 class LoginController {
     UserService userService
 
-    def index() {
-        render view:'login'
-    }
+    static allowedMethods = [authenticate: "POST"]
 
+    // POST /login  { username, password }
     def authenticate() {
-        User u = userService.authenticate(params.email, params.password)
-        if(u) {
+        def j = request.JSON
+        User u = userService.authenticate(j.username, j.password)
+        if (u) {
             session.user = u
-            redirect controller:'room', action:'lobby'
+            render([success: true, next: "/username.html"] as JSON)
         } else {
-            flash.error = 'Ungültige Anmeldedaten'
-            render view:'login'
+            render(status:401, [success: false, error: "Ungültige Anmeldedaten"] as JSON)
         }
     }
 }
