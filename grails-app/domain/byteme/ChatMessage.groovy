@@ -1,17 +1,15 @@
 package byteme
 
-class Move {
+class ChatMessage {
     Game game
     User user
-    Integer row
-    Integer column
+    String text
     Date createdAt = new Date()
 
     static constraints = {
         game nullable: false
         user nullable: false
-        row range: 0..2
-        column range: 0..2
+        text blank: false, maxSize: 1000
     }
     static mapping = {
         user column: 'user_id'

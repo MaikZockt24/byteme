@@ -1,22 +1,25 @@
 package byteme
 
-class User {
-    Long    id               // PK user_id
-    String  sessionName      // sessionname
-    String  email            // email
-    String  password         // passwort (hashed)
 
-    static mapping = {
-        table       'users'
-        id column:'user_id'
-        sessionName column:'sessionname'
-        password    column:'passwort'
-        version     false
-    }
+class User {
+    String email
+    String passwordHash
+    String username
+    Date registeredAt = new Date()
+
+    static hasMany = [games: Game, moves: Move, chatMessages: ChatMessage]
 
     static constraints = {
-        sessionName blank:false, unique:true, size:3..30
-        email       blank:false, email:true, unique:true
-        password    blank:false, size:8..64
+        email blank: false, unique: true, email: true
+        passwordHash blank: false
+        username nullable: true, blank: true
+    }
+    static mapping = {
+        table 'ttt_user' 
+        id column: 'id'
+        email column: 'email'
+        passwordHash column: 'password_hash'
+        username column: 'username'
+        registeredAt column: 'registered_at'
     }
 }
