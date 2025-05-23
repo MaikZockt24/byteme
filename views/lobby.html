@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lobby</title>
+  <link rel="stylesheet" href="../stylesheets/lobby.css">
+</head>
+<body>
+    <!-- Lobby-Bereich -->
+  <div class="lobby-container">
+    <h2>Welcome to the Lobby</h2>
+    <div class="game-options">
+      <div class="create-game" onclick="showCreateGameModal()">Create Game</div>
+      <div class="join-game">
+        <h3>Join Game</h3>
+        <ul id="roomList">
+          <li data-code="ABC123" onclick="showJoinGameModal(this)">Room 1 (by User1)</li>
+          <li data-code="XYZ789" onclick="showJoinGameModal(this)">Room 2 (by User2)</li>
+          <li data-code="DEF456" onclick="showJoinGameModal(this)">Room 3 (by User3)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Game Modal -->
+  <div id="createGameModal" class="modal">
+    <div class="modal-content">
+      <h3>Create New Game</h3>
+      <input type="text" id="gameName" placeholder="Game Name" required>
+      <input type="text" id="joinCode" placeholder="Join Code (e.g., ABC123)" required>
+      <button onclick="createNewGame()">Create</button>
+    </div>
+  </div>
+
+  <!-- Join Game Modal -->
+  <div id="joinGameModal" class="modal">
+    <div class="modal-content">
+      <h3>Join Game</h3>
+      <input type="text" id="joinCodeInput" placeholder="Enter Join Code" required>
+      <button onclick="joinGame()">Join</button>
+    </div>
+  </div>
+
+  <!-- Ladeanimation -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <img src="../images/kringel.png" class="loading-symbol" style="top: 40%; left: -100px;">
+    <img src="../images/kreuz.png" class="loading-symbol" style="top: 60%; left: -100px;">
+  </div>
+
+  <!-- Test-Button -->
+  <button class="test-button" onclick="testLoadingAnimation()">Test Animation</button>
+
+    <script src="../javascripts/lobby.js"></script> 
+</body>
+</html>

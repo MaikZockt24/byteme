@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login-Seite</title>
+  <link rel="stylesheet" href="../stylesheets/login.css">
+</head>
+<body>
+  <!-- Login-Formular -->
+  <div class="login-container">
+    <h2>Anmelden</h2>
+    <div>
+      <input type="email" id="email" placeholder="E-Mail" required>
+      <input type="password" id="password" placeholder="Passwort" required>
+      <a href="forgotPassword.html" id="forgot-password">Passwort vergessen?</a>
+      <a href="register.html" id="register">Registrieren</a>
+      <button onclick="handleLogin()">Anmelden</button>
+    </div>
+  </div>
+    <script src="../javascripts/login.js"></script> 
+</body>
+</html>

@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background: url("../../assets/images/hintergrund.png") no-repeat center center fixed;
+  background-size: cover;
+  overflow: hidden;
+  position: relative;
+}
+
+.symbol {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  animation: flicker 6s infinite;
+  transition: top 0.5s ease, left 0.5s ease, opacity 0.3s ease, transform 0.3s ease; /* Transition für Positionen */
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  45%, 55% { opacity: 0.5; transform: scale(1.2); } /* Subtiler Effekt */
+}
+
+.teleport {
+  animation: teleport 0.3s ease;
+}
+
+@keyframes teleport {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); opacity: 0.7; }
+  100% { transform: scale(1); }
+}
