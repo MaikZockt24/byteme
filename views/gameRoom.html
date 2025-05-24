@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ByteMe Chat</title>
+  <link rel="stylesheet" href="../stylesheets/gameRoom.css">
+</head>
+<body>
+  <div class="container">
+    <h2>ByteMe Chat</h2>
+
+    <!-- Status-Anzeige -->
+    <div id="status">
+      <span id="connectionStatus" class="disconnected">Disconnected</span>
+    </div>
+
+    <!-- Login-Bereich -->
+    <div id="loginForm">
+      <input type="email" id="email" placeholder="E-Mail">
+      <input type="password" id="password" placeholder="Passwort">
+      <button onclick="handleLogin()">Login</button>
+    </div>
+
+    <!-- Chat-Bereich -->
+    <div id="chatArea" class="hidden">
+      <div><strong>Game ID:</strong> <span id="activeGameId">1</span></div>
+      <div id="chatWindow"></div>
+      <input id="messageInput" placeholder="Nachricht eingeben...">
+      <button onclick="sendMessage()">Senden</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>    
+    <script src="../javascripts/gameRoom.js"></script> 
+</body>
+</html>
