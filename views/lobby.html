@@ -7,18 +7,14 @@
   <link rel="stylesheet" href="../stylesheets/lobby.css">
 </head>
 <body>
-    <!-- Lobby-Bereich -->
+  <!-- Lobby-Bereich -->
   <div class="lobby-container">
     <h2>Welcome to the Lobby</h2>
     <div class="game-options">
       <div class="create-game" onclick="showCreateGameModal()">Create Game</div>
       <div class="join-game">
         <h3>Join Game</h3>
-        <ul id="roomList">
-          <li data-code="ABC123" onclick="showJoinGameModal(this)">Room 1 (by User1)</li>
-          <li data-code="XYZ789" onclick="showJoinGameModal(this)">Room 2 (by User2)</li>
-          <li data-code="DEF456" onclick="showJoinGameModal(this)">Room 3 (by User3)</li>
-        </ul>
+        <ul id="roomList"></ul> <!-- Leere Liste für dynamische Räume -->
       </div>
     </div>
   </div>
@@ -48,9 +44,6 @@
     <img src="../images/kreuz.png" class="loading-symbol" style="top: 60%; left: -100px;">
   </div>
 
-  <!-- Test-Button -->
-  <button class="test-button" onclick="testLoadingAnimation()">Test Animation</button>
-
-    <script src="../javascripts/lobby.js"></script> 
+  <script src="../javascripts/lobby.js"></script>
 </body>
 </html>
