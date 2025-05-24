@@ -79,7 +79,7 @@ async function handleRegister() {
     });
 
     if (response.ok) {
-        window.location.href = "next-room.html"; // Weiterleitung zum nächsten Raum
+        window.location.href = "lobby.html"; // Weiterleitung zum nächsten Raum
     } else {
         const error = await response.json();
         alert("Registrierung fehlgeschlagen: " + (error.message || "Unbekannter Fehler"));
