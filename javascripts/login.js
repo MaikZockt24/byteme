@@ -73,7 +73,7 @@ async function handleLogin() {
     });
 
     if (response.ok) {
-        window.location.href = "next-room.html"; // Direkte Weiterleitung zum nächsten Raum
+        window.location.href = "lobby.html"; // Direkte Weiterleitung zum nächsten Raum
     } else {
         const error = await response.json();
         alert("Anmeldung fehlgeschlagen: " + (error.message || "Unbekannter Fehler"));
