@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="../stylesheets/lobby.css">
 </head>
 <body>
+  <!-- Menü-Button oben rechts -->
+  <div class="menu-button" onclick="toggleMenu()">☰</div>
+  <div id="menuDropdown" class="menu-dropdown">
+    <a href="#" onclick="logout(event)">Logout</a>
+    <a href="#" onclick="deleteAccount(event)">Konto löschen</a>
+  </div>
+
   <!-- Lobby-Bereich -->
   <div class="lobby-container">
     <h2>Welcome to the Lobby</h2>
