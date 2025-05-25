@@ -4,7 +4,7 @@ function showCreateGameModal() {
     document.getElementById("createGameModal").style.display = "block";
 }
 
-function createNewGame() {
+async function createNewGame() {
     const gameName = document.getElementById("gameName").value;
     const joinCode = document.getElementById("joinCode").value.toUpperCase();
 
@@ -13,23 +13,30 @@ function createNewGame() {
         return;
     }
 
-    if (rooms.some(room => room.code === joinCode)) {
-        alert("Dieser Join-Code ist bereits vergeben.");
-        return;
-    }
-
     showLoadingAnimation();
-    setTimeout(() => {
+    try {
+        const response = await fetch("https://iu-tomcat.servicecluster.de/byteme/api/game/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: gameName, code: joinCode, host: "You", maxPlayers: 2 })
+        });
+
+        if (!response.ok) {
+            throw new Error("Fehler beim Erstellen des Spiels: " + response.statusText);
+        }
+
+        const newRoom = await response.json();
         rooms.push({ name: gameName, code: joinCode, host: "You", players: 1, maxPlayers: 2 });
         updateRoomList();
         document.getElementById("createGameModal").style.display = "none";
         document.getElementById("gameName").value = "";
         document.getElementById("joinCode").value = "";
         hideLoadingAnimation();
-        // Platzhalter für Weiterleitung zur Spielseite (dein Partner macht das)
-        // window.location.href = "game.html";
-        alert("Spiel erstellt! Teile den Join-Code: " + joinCode + ". Weiterleitung zur Spielseite folgt (Platzhalter).");
-    }, 3000); // Simuliert Ladezeit
+        window.location.href = "gameRoom.html";
+    } catch (error) {
+        hideLoadingAnimation();
+        alert(error.message);
+    }
 }
 
 function showJoinGameModal(element) {
@@ -37,7 +44,7 @@ function showJoinGameModal(element) {
     document.getElementById("joinGameModal").dataset.selectedRoomCode = element.dataset.code;
 }
 
-function joinGame() {
+async function joinGame() {
     const joinCodeInput = document.getElementById("joinCodeInput").value.toUpperCase();
     const selectedRoomCode = document.getElementById("joinGameModal").dataset.selectedRoomCode;
 
@@ -47,7 +54,17 @@ function joinGame() {
     }
 
     showLoadingAnimation();
-    setTimeout(() => {
+    try {
+        const response = await fetch("https://iu-tomcat.servicecluster.de/byteme/api/game/join", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: joinCodeInput })
+        });
+
+        if (!response.ok) {
+            throw new Error("Fehler beim Beitreten: " + response.statusText);
+        }
+
         const room = rooms.find(r => r.code === selectedRoomCode);
         if (room && room.code === joinCodeInput) {
             if (room.players < room.maxPlayers) {
@@ -60,8 +77,7 @@ function joinGame() {
                 } else {
                     alert("Du bist dem Spiel beigetreten! Spieler: " + room.players + "/2");
                 }
-                // Platzhalter für Weiterleitung zur Spielseite
-                // window.location.href = "game.html";
+                window.location.href = "gameRoom.html";
             } else {
                 hideLoadingAnimation();
                 alert("Das Spiel ist bereits voll (max. 2 Spieler).");
@@ -70,7 +86,10 @@ function joinGame() {
             hideLoadingAnimation();
             alert("Ungültiger Join-Code.");
         }
-    }, 3000); // Simuliert Ladezeit
+    } catch (error) {
+        hideLoadingAnimation();
+        alert(error.message);
+    }
 }
 
 function updateRoomList() {
@@ -83,7 +102,6 @@ function updateRoomList() {
         li.onclick = () => showJoinGameModal(li);
         roomList.appendChild(li);
     });
-    // Simulierte API-Abfrage für Räume anderer Nutzer
     fetchRoomsFromServer();
 }
 
