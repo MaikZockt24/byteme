@@ -4,32 +4,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Impressum</title>
-  <style>
+<style>
     body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      background-image: url("../images/hintergrund.png"); /* Dein dunkles Hintergrundbild */
+      background-image: url("../images/hintergrund.png");
       background-size: cover;
       background-position: center;
-      color: #fff; /* Weiße Schrift für Lesbarkeit auf dunklem Hintergrund */
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      overflow: hidden;
     }
+
+    .symbol {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      animation: flicker 6s infinite;
+      transition: top 0.5s ease, left 0.5s ease, opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1; /* Symbole im Hintergrund */
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      45%, 55% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .teleport {
+      animation: teleport 0.3s ease;
+    }
+
+    @keyframes teleport {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.5); opacity: 0.7; }
+      100% { transform: scale(1); }
+    }
+    
     .impressum-container {
-      background-color: #333; /* Halbtransparenter Überzug für bessere Lesbarkeit */
+      background-color: #333;
       padding: 20px;
       border-radius: 8px;
       max-width: 600px;
       text-align: left;
+      z-index: 2; /* Container über den Symbolen */
+      position: relative; /* Für z-index notwendig */
     }
     h1 {
       text-align: center;
     }
     a {
       color: #1e90ff;
+    }
+    p {
+      text-align: center;
     }
   </style>
 </head>
@@ -52,5 +83,55 @@
     Dennoch übernehmen wir keine Haftung für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte.</p>
     <p><a href="login.html" style="color: rgb(179, 179, 179);">Zurück zur Login-Seite</a></p>
   </div>
+  <script>
+    const NUM_SYMBOLS = 40;
+    const symbols = [];
+    const symbolFiles = ["../images/kreuz.png", "../images/kringel.png"];
+
+    for (let i = 0; i < NUM_SYMBOLS; i++) {
+        const img = document.createElement("img");
+        img.src = symbolFiles[Math.floor(Math.random() * 2)];
+        img.className = "symbol";
+        img.style.top = `${Math.random() * 100}vh`;
+        img.style.left = `${Math.random() * 100}vw`;
+        img.style.animationDelay = `${Math.random() * 5}s`;
+        document.body.appendChild(img);
+        symbols.push(img);
+    }
+
+    function swapPositions() {
+        const indexA = Math.floor(Math.random() * symbols.length);
+        let indexB = Math.floor(Math.random() * symbols.length);
+        while (indexA === indexB) {
+            indexB = Math.floor(Math.random() * symbols.length);
+        }
+        const a = symbols[indexA];
+        const b = symbols[indexB];
+        a.classList.add("teleport");
+        b.classList.add("teleport");
+        setTimeout(() => {
+            a.classList.remove("teleport");
+            b.classList.remove("teleport");
+        }, 300);
+        const tempTop = a.style.top;
+        const tempLeft = a.style.left;
+        a.style.top = b.style.top;
+        a.style.left = b.style.left;
+        b.style.top = tempTop;
+        b.style.left = tempLeft;
+    }
+
+    setInterval(swapPositions, 500);
+
+    setInterval(() => {
+        const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+        randomSymbol.classList.add("teleport");
+        setTimeout(() => {
+            randomSymbol.classList.remove("teleport");
+        }, 300);
+        randomSymbol.style.top = `${Math.random() * 100}vh`;
+        randomSymbol.style.left = `${Math.random() * 100}vw`;
+    }, 1500);
+  </script>
 </body>
 </html>

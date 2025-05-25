@@ -1,4 +1,4 @@
-// Symbole Animation (unverändert)
+// Symbole Animation
 const NUM_SYMBOLS = 40;
 const symbols = [];
 const symbolFiles = ["../images/kreuz.png", "../images/kringel.png"];
