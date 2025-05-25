@@ -28,7 +28,7 @@ async function createNewGame() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name: gameName, code: joinCode, host: "You", maxPlayers: 2 })
+            body: JSON.stringify({ name: gameName, code: joinCode, maxPlayers: 2 })
         });
 
         if (!response.ok) {
@@ -42,7 +42,7 @@ async function createNewGame() {
         }
 
         const newRoom = await response.json();
-        rooms.push({ name: gameName, code: joinCode, host: "You", players: 1, maxPlayers: 2 });
+        rooms.push({ name: gameName, code: joinCode, players: 1, maxPlayers: 2 });
         updateRoomList();
         document.getElementById("createGameModal").style.display = "none";
         document.getElementById("gameName").value = "";

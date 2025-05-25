@@ -71,7 +71,7 @@ try {
         },
         body: JSON.stringify(loginData)
     });
-
+console.error(response)
     if (response.ok) {
         const data = await response.json();
         localStorage.setItem("jwtToken", data.token); // JWT-Token speichern
