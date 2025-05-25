@@ -1,11 +1,17 @@
 info:
   app:
-    name: test
+    name: byteme
     version: '0.1'
     grailsVersion: 6.1.0
 grails:
   cors:
     enabled: true
+    mappings:
+      '[/api/**]':
+      allowed-origins: "*"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
   views:
     default:
       codec: html

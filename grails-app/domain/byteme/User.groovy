@@ -7,12 +7,15 @@ class User {
     String username
     Date registeredAt = new Date()
 
-    static hasMany = [games: Game, moves: Move, chatMessages: ChatMessage]
+    static hasMany = [moves: Move, chatMessages: ChatMessage]
+    static belongsTo = [ game: Game ]
+    Game game
 
     static constraints = {
         email blank: false, unique: true, email: true
         passwordHash blank: false
         username nullable: true, blank: true
+        game nullable: true 
     }
     static mapping = {
         table 'ttt_user' 
@@ -21,5 +24,6 @@ class User {
         passwordHash column: 'password_hash'
         username column: 'username'
         registeredAt column: 'registered_at'
+        game column: 'game_id'
     }
 }

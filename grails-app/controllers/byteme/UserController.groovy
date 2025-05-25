@@ -11,18 +11,20 @@ class UserController {
     // Registrierung
     def register() {
         def json = request.JSON
-        if (!json.email || !json.password || !json.passwordConfirmation) {
-        render status: 400, json: [error: "E-Mail, Passwort und Passwortbestätigung erforderlich"]
-        return
-        }
-        if (json.password != json.passwordConfirmation) {
-        render status: 400, json: [error: "Passwörter stimmen nicht überein"]
-        return
+        try {
+            if (!json.email || !json.password) {
+            render status: 400, json: [error: "E-Mail und/oder Passwort erforderlich"]
+            return
+            }
+        } catch (Exception e) {
+            render status: 400, json: [error: "Ungültige Anfrage: ${e.message}"]
+            return
         }
         def user = userService.register(json.email, json.password)
         if (!user) {
             render status: 400, json: [error: "E-Mail existiert bereits"]
         } else {
+            session.userId = user.id
             render status: 201, json: [id: user.id, email: user.email, username: user.username, registeredAt: user.registeredAt]
         }
     }
@@ -30,15 +32,20 @@ class UserController {
     // Login
     def login() {
         def json = request.JSON
-        if (!json.email || !json.password) {
+        try {
+            if (!json.email || !json.password) {
             render status: 400, json: [error: "E-Mail und/oder Passwort erforderlich"]
+            return
+        }
+        } catch (Exception e) {
+            render status: 400, json: [error: "Ungültige Anfrage: ${e.message}"]
             return
         }
         def user = userService.authenticate(json.email, json.password)
         if (!user) {
             render status: 403, json: [error: "Ungültige E-Mail oder Passwort"]
         } else {
-            // Kein Token/JWT für Einfachheit. Bei echtem System hier JWT generieren!
+            session.userId = user.id
             render status: 200, json: [id: user.id, email: user.email, username: user.username, registeredAt: user.registeredAt]
         }
     }
@@ -46,8 +53,13 @@ class UserController {
     // Passwort zurücksetzen
     def forgot() {
         def json = request.JSON
-        if (!json.email || !json.newPassword) {
-            render status: 400, json: [error: "E-Mail und/oder neues Passwort erforderlich"]
+        try {
+            if (!json.email || !json.newPassword) {
+                render status: 400, json: [error: "E-Mail und/oder neues Passwort erforderlich"]
+                return
+            }
+        } catch (Exception e) {
+            render status: 400, json: [error: "Ungültige Anfrage: ${e.message}"]
             return
         }
         boolean success = userService.resetPassword(json.email, json.newPassword)
@@ -61,11 +73,16 @@ class UserController {
     // Username setzen/ändern
     def setUsername() {
         def json = request.JSON
-        if (!json.email || !json.username) {
+        try {
+            if (!json.email || !json.username) {
             render status: 400, json: [error: "E-Mail und/oder Username erforderlich"]
             return
+            }
+        } catch (Exception e) {
+            render status: 400, json: [error: "Ungültige Anfrage: ${e.message}"]
+            return
         }
-        def user = User.findByEmail(json.email)
+        def user = User.get(session.userId)
         if (!user) {
             render status: 404, json: [error: "User nicht gefunden"]
         } else {
@@ -74,12 +91,21 @@ class UserController {
             render status: 200, json: [id: user.id, email: user.email, username: user.username, registeredAt: user.registeredAt]
         }
     }
-
+    // Logout
+    def logout() {
+        session.invalidate()
+        render status: 200, json: [message: "Logout erfolgreich"]
+    }
     // Account löschen
     def delete() {
         def json = request.JSON
-        if (!json.email) {
+        try {
+           if (!json.email) {
             render status: 400, json: [error: "E-Mail erforderlich"]
+            return
+        }
+        } catch (Exception e) {
+            render status: 400, json: [error: "Ungültige Anfrage: ${e.message}"]
             return
         }
         def user = User.findByEmail(json.email)
