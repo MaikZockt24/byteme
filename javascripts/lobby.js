@@ -43,7 +43,7 @@ async function createNewGame() {
 
         const newRoom = await response.json();
         rooms.push({ name: gameName, code: joinCode, players: 1, maxPlayers: 2 });
-        updateRoomList();
+        updateRoomList(); // Nur die Liste aktualisieren, kein fetchRoomsFromServer
         document.getElementById("createGameModal").style.display = "none";
         document.getElementById("gameName").value = "";
         document.getElementById("joinCode").value = "";
@@ -134,7 +134,6 @@ function updateRoomList() {
         li.onclick = () => showJoinGameModal(li);
         roomList.appendChild(li);
     });
-    fetchRoomsFromServer();
 }
 
 function showLoadingAnimation() {
@@ -153,7 +152,7 @@ function fetchRoomsFromServer() {
         { name: "Room B", code: "CODE002", host: "UserY", players: 0, maxPlayers: 2 }
     ];
     rooms = [...rooms, ...simulatedRooms.filter(r => !rooms.some(room => room.code === r.code))];
-    updateRoomList();
+    updateRoomList(); // Hier wird die Liste aktualisiert
 }
 
 window.onclick = function(event) {
