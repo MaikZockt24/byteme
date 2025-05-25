@@ -43,7 +43,7 @@ async function createNewGame() {
 
         const newRoom = await response.json();
         rooms.push({ name: gameName, code: joinCode, players: 1, maxPlayers: 2 });
-        updateRoomList(); // Nur die Liste aktualisieren, kein fetchRoomsFromServer
+        updateRoomList();
         document.getElementById("createGameModal").style.display = "none";
         document.getElementById("gameName").value = "";
         document.getElementById("joinCode").value = "";
@@ -146,13 +146,45 @@ function hideLoadingAnimation() {
     overlay.style.display = "none";
 }
 
-function fetchRoomsFromServer() {
-    const simulatedRooms = [
-        { name: "Room A", code: "CODE001", host: "UserX", players: 1, maxPlayers: 2 },
-        { name: "Room B", code: "CODE002", host: "UserY", players: 0, maxPlayers: 2 }
-    ];
-    rooms = [...rooms, ...simulatedRooms.filter(r => !rooms.some(room => room.code === r.code))];
-    updateRoomList(); // Hier wird die Liste aktualisiert
+async function fetchRoomsFromServer() {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/lobby', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
+                localStorage.removeItem("jwtToken");
+                window.location.href = "login.html";
+                return;
+            }
+            throw new Error("Fehler beim Laden der Lobby: " + response.statusText);
+        }
+
+        const games = await response.json();
+        // Annahme: API gibt ein Array von Spielen zurück, z. B. [{ gameId, name, code, host, playerCount, maxPlayers }]
+        rooms = games.map(game => ({
+            name: game.name || `Raum ${game.gameId}`,
+            code: game.code,
+            host: game.host || "Unknown",
+            players: game.playerCount,
+            maxPlayers: game.maxPlayers || 2
+        }));
+        updateRoomList();
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
 window.onclick = function(event) {
