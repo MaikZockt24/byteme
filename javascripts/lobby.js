@@ -15,9 +15,10 @@ async function createNewGame() {
 
     showLoadingAnimation();
     try {
-        const response = await fetch("https://iu-tomcat.servicecluster.de/byteme/api/game/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/create', {
+            method: 'POST',
+            credentials: 'include',      // damit das Session-Cookie und session.userId mitkommen
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: gameName, code: joinCode, host: "You", maxPlayers: 2 })
         });
 
@@ -55,9 +56,10 @@ async function joinGame() {
 
     showLoadingAnimation();
     try {
-        const response = await fetch("https://iu-tomcat.servicecluster.de/byteme/api/game/join", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/join', {
+            method: 'POST',
+            credentials: 'include',      // damit das Session-Cookie und session.userId mitkommen
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code: joinCodeInput })
         });
 
