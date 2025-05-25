@@ -1,145 +1,173 @@
 let rooms = [];
 
 function showCreateGameModal() {
-    document.getElementById("createGameModal").style.display = "block";
+document.getElementById("createGameModal").style.display = "block";
 }
 
 async function createNewGame() {
-    const gameName = document.getElementById("gameName").value;
-    const joinCode = document.getElementById("joinCode").value.toUpperCase();
+const gameName = document.getElementById("gameName").value;
+const joinCode = document.getElementById("joinCode").value.toUpperCase();
 
-    if (!gameName || !joinCode || joinCode.length < 6) {
-        alert("Bitte gib einen gültigen Spielnamen und einen Join-Code (mind. 6 Zeichen) ein.");
-        return;
-    }
+if (!gameName || !joinCode || joinCode.length < 6) {
+    alert("Bitte gib einen gültigen Spielnamen und einen Join-Code (mind. 6 Zeichen) ein.");
+    return;
+}
 
-    showLoadingAnimation();
-    try {
-        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/create', {
-            method: 'POST',
-            credentials: 'include',      // damit das Session-Cookie und session.userId mitkommen
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: gameName, code: joinCode, host: "You", maxPlayers: 2 })
-        });
+const token = localStorage.getItem("jwtToken");
+if (!token) {
+    alert("Bitte melde dich zuerst an.");
+    window.location.href = "login.html";
+    return;
+}
 
-        if (!response.ok) {
-            throw new Error("Fehler beim Erstellen des Spiels: " + response.statusText);
+showLoadingAnimation();
+try {
+    const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: gameName, code: joinCode, host: "You", maxPlayers: 2 })
+    });
+
+    if (!response.ok) {
+        if (response.status === 401) {
+            alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
+            localStorage.removeItem("jwtToken");
+            window.location.href = "login.html";
+            return;
         }
-
-        const newRoom = await response.json();
-        rooms.push({ name: gameName, code: joinCode, host: "You", players: 1, maxPlayers: 2 });
-        updateRoomList();
-        document.getElementById("createGameModal").style.display = "none";
-        document.getElementById("gameName").value = "";
-        document.getElementById("joinCode").value = "";
-        hideLoadingAnimation();
-        window.location.href = "gameRoom.html";
-    } catch (error) {
-        hideLoadingAnimation();
-        alert(error.message);
+        throw new Error("Fehler beim Erstellen des Spiels: " + response.statusText);
     }
+
+    const newRoom = await response.json();
+    rooms.push({ name: gameName, code: joinCode, host: "You", players: 1, maxPlayers: 2 });
+    updateRoomList();
+    document.getElementById("createGameModal").style.display = "none";
+    document.getElementById("gameName").value = "";
+    document.getElementById("joinCode").value = "";
+    hideLoadingAnimation();
+    window.location.href = "gameRoom.html";
+} catch (error) {
+    hideLoadingAnimation();
+    alert(error.message);
+}
 }
 
 function showJoinGameModal(element) {
-    document.getElementById("joinGameModal").style.display = "block";
-    document.getElementById("joinGameModal").dataset.selectedRoomCode = element.dataset.code;
+document.getElementById("joinGameModal").style.display = "block";
+document.getElementById("joinGameModal").dataset.selectedRoomCode = element.dataset.code;
 }
 
 async function joinGame() {
-    const joinCodeInput = document.getElementById("joinCodeInput").value.toUpperCase();
-    const selectedRoomCode = document.getElementById("joinGameModal").dataset.selectedRoomCode;
+const joinCodeInput = document.getElementById("joinCodeInput").value.toUpperCase();
+const selectedRoomCode = document.getElementById("joinGameModal").dataset.selectedRoomCode;
 
-    if (!joinCodeInput) {
-        alert("Bitte gib einen Join-Code ein.");
-        return;
+if (!joinCodeInput) {
+    alert("Bitte gib einen Join-Code ein.");
+    return;
+}
+
+const token = localStorage.getItem("jwtToken");
+if (!token) {
+    alert("Bitte melde dich zuerst an.");
+    window.location.href = "login.html";
+    return;
+}
+
+showLoadingAnimation();
+try {
+    const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/join', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ code: joinCodeInput })
+    });
+
+    if (!response.ok) {
+        if (response.status === 401) {
+            alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
+            localStorage.removeItem("jwtToken");
+            window.location.href = "login.html";
+            return;
+        }
+        throw new Error("Fehler beim Beitreten: " + response.statusText);
     }
 
-    showLoadingAnimation();
-    try {
-        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/join', {
-            method: 'POST',
-            credentials: 'include',      // damit das Session-Cookie und session.userId mitkommen
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: joinCodeInput })
-        });
-
-        if (!response.ok) {
-            throw new Error("Fehler beim Beitreten: " + response.statusText);
-        }
-
-        const room = rooms.find(r => r.code === selectedRoomCode);
-        if (room && room.code === joinCodeInput) {
-            if (room.players < room.maxPlayers) {
-                room.players++;
-                document.getElementById("joinGameModal").style.display = "none";
-                document.getElementById("joinCodeInput").value = "";
-                hideLoadingAnimation();
-                if (room.players === 2) {
-                    alert("Das Spiel kann beginnen! (Host: " + room.host + ")");
-                } else {
-                    alert("Du bist dem Spiel beigetreten! Spieler: " + room.players + "/2");
-                }
-                window.location.href = "gameRoom.html";
+    const room = rooms.find(r => r.code === selectedRoomCode);
+    if (room && room.code === joinCodeInput) {
+        if (room.players < room.maxPlayers) {
+            room.players++;
+            document.getElementById("joinGameModal").style.display = "none";
+            document.getElementById("joinCodeInput").value = "";
+            hideLoadingAnimation();
+            if (room.players === 2) {
+                alert("Das Spiel kann beginnen! (Host: " + room.host + ")");
             } else {
-                hideLoadingAnimation();
-                alert("Das Spiel ist bereits voll (max. 2 Spieler).");
+                alert("Du bist dem Spiel beigetreten! Spieler: " + room.players + "/2");
             }
+            window.location.href = "gameRoom.html";
         } else {
             hideLoadingAnimation();
-            alert("Ungültiger Join-Code.");
+            alert("Das Spiel ist bereits voll (max. 2 Spieler).");
         }
-    } catch (error) {
+    } else {
         hideLoadingAnimation();
-        alert(error.message);
+        alert("Ungültiger Join-Code.");
     }
+} catch (error) {
+    hideLoadingAnimation();
+    alert(error.message);
+}
 }
 
 function updateRoomList() {
-    const roomList = document.getElementById("roomList");
-    roomList.innerHTML = "";
-    rooms.forEach(room => {
-        const li = document.createElement("li");
-        li.textContent = `${room.name} (by ${room.host}) - ${room.players}/2`;
-        li.dataset.code = room.code;
-        li.onclick = () => showJoinGameModal(li);
-        roomList.appendChild(li);
-    });
-    fetchRoomsFromServer();
+const roomList = document.getElementById("roomList");
+roomList.innerHTML = "";
+rooms.forEach(room => {
+    const li = document.createElement("li");
+    li.textContent = `${room.name} (by ${room.host}) - ${room.players}/2`;
+    li.dataset.code = room.code;
+    li.onclick = () => showJoinGameModal(li);
+    roomList.appendChild(li);
+});
+fetchRoomsFromServer();
 }
 
 function showLoadingAnimation() {
-    const overlay = document.getElementById("loadingOverlay");
-    overlay.style.display = "flex";
+const overlay = document.getElementById("loadingOverlay");
+overlay.style.display = "flex";
 }
 
 function hideLoadingAnimation() {
-    const overlay = document.getElementById("loadingOverlay");
-    overlay.style.display = "none";
+const overlay = document.getElementById("loadingOverlay");
+overlay.style.display = "none";
 }
 
 // Simulierte Funktion für API-Abfrage
 function fetchRoomsFromServer() {
-    // Platzhalter für echte API (z. B. fetch("/api/rooms"))
-    // Hier simulieren wir Räume von anderen Nutzern
-    const simulatedRooms = [
-        { name: "Room A", code: "CODE001", host: "UserX", players: 1, maxPlayers: 2 },
-        { name: "Room B", code: "CODE002", host: "UserY", players: 0, maxPlayers: 2 }
-    ];
-    rooms = [...rooms, ...simulatedRooms.filter(r => !rooms.some(room => room.code === r.code))];
-    updateRoomList();
+const simulatedRooms = [
+    { name: "Room A", code: "CODE001", host: "UserX", players: 1, maxPlayers: 2 },
+    { name: "Room B", code: "CODE002", host: "UserY", players: 0, maxPlayers: 2 }
+];
+rooms = [...rooms, ...simulatedRooms.filter(r => !rooms.some(room => room.code === r.code))];
+updateRoomList();
 }
 
 // Schließe das Modal, wenn man außerhalb klickt
 window.onclick = function(event) {
-    const modals = document.getElementsByClassName("modal");
-    for (let modal of modals) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-            document.getElementById("gameName").value = "";
-            document.getElementById("joinCode").value = "";
-            document.getElementById("joinCodeInput").value = "";
-        }
+const modals = document.getElementsByClassName("modal");
+for (let modal of modals) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+        document.getElementById("gameName").value = "";
+        document.getElementById("joinCode").value = "";
+        document.getElementById("joinCodeInput").value = "";
     }
+}
 }
 
 // Initiale Raumliste laden

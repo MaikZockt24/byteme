@@ -1,90 +1,92 @@
-// Symbole Animation
+// Symbole Animation (unverändert)
 const NUM_SYMBOLS = 40;
 const symbols = [];
 const symbolFiles = ["../images/kreuz.png", "../images/kringel.png"];
 
 for (let i = 0; i < NUM_SYMBOLS; i++) {
-    const img = document.createElement("img");
-    img.src = symbolFiles[Math.floor(Math.random() * 2)];
-    img.className = "symbol";
-    img.style.top = `${Math.random() * 100}vh`;
-    img.style.left = `${Math.random() * 100}vw`;
-    img.style.animationDelay = `${Math.random() * 5}s`;
-    document.body.appendChild(img);
-    symbols.push(img);
+const img = document.createElement("img");
+img.src = symbolFiles[Math.floor(Math.random() * 2)];
+img.className = "symbol";
+img.style.top = `${Math.random() * 100}vh`;
+img.style.left = `${Math.random() * 100}vw`;
+img.style.animationDelay = `${Math.random() * 5}s`;
+document.body.appendChild(img);
+symbols.push(img);
 }
 
 function swapPositions() {
-    const indexA = Math.floor(Math.random() * symbols.length);
-    let indexB = Math.floor(Math.random() * symbols.length);
-    while (indexA === indexB) {
+const indexA = Math.floor(Math.random() * symbols.length);
+let indexB = Math.floor(Math.random() * symbols.length);
+while (indexA === indexB) {
     indexB = Math.floor(Math.random() * symbols.length);
-    }
-    const a = symbols[indexA];
-    const b = symbols[indexB];
-    a.classList.add("teleport");
-    b.classList.add("teleport");
-    setTimeout(() => {
+}
+const a = symbols[indexA];
+const b = symbols[indexB];
+a.classList.add("teleport");
+b.classList.add("teleport");
+setTimeout(() => {
     a.classList.remove("teleport");
     b.classList.remove("teleport");
-    }, 300);
-    const tempTop = a.style.top;
-    const tempLeft = a.style.left;
-    a.style.top = b.style.top;
-    a.style.left = b.style.left;
-    b.style.top = tempTop;
-    b.style.left = tempLeft;
+}, 300);
+const tempTop = a.style.top;
+const tempLeft = a.style.left;
+a.style.top = b.style.top;
+a.style.left = b.style.left;
+b.style.top = tempTop;
+b.style.left = tempLeft;
 }
 
 setInterval(swapPositions, 500);
 
 setInterval(() => {
-    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-    randomSymbol.classList.add("teleport");
-    setTimeout(() => {
+const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+randomSymbol.classList.add("teleport");
+setTimeout(() => {
     randomSymbol.classList.remove("teleport");
-    }, 300);
-    randomSymbol.style.top = `${Math.random() * 100}vh`;
-    randomSymbol.style.left = `${Math.random() * 100}vw`;
+}, 300);
+randomSymbol.style.top = `${Math.random() * 100}vh`;
+randomSymbol.style.left = `${Math.random() * 100}vw`;
 }, 1500);
 
 // Registrierungs-Handling
 async function handleRegister() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirm-password").value;
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+const confirmPassword = document.getElementById("confirm-password").value;
 
-    if (!email || !password || !confirmPassword) {
+if (!email || !password || !confirmPassword) {
     alert("Bitte alle Felder ausfüllen.");
     return;
-    }
+}
 
-    if (password !== confirmPassword) {
+if (password !== confirmPassword) {
     alert("Die Passwörter stimmen nicht überein.");
     return;
-    }
+}
 
-    const registerData = {
+const registerData = {
     email: email,
     password: password
-    };
+};
 
-    try {
+try {
     const response = await fetch("https://iu-tomcat.servicecluster.de/byteme/api/register", {
         method: "POST",
         headers: {
-        "Content-Type": "application/json"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(registerData)
     });
 
     if (response.ok) {
-        window.location.href = "lobby.html"; // Weiterleitung zum nächsten Raum
+        const data = await response.json();
+        localStorage.setItem("jwtToken", data.token); // JWT-Token speichern
+        window.location.href = "lobby.html";
     } else {
         const error = await response.json();
         alert("Registrierung fehlgeschlagen: " + (error.message || "Unbekannter Fehler"));
     }
-    } catch (error) {
+} catch (error) {
     alert("Fehler bei der Registrierung: " + error.message);
-    }
+}
 }
