@@ -14,3 +14,5 @@ Backround wurde zum impressum hinzugefügt
 Mailto: wurde zu den E-Mail links hinzugefügt
 
 Logout und konto löschen button zur lobby seite hinzugefügt
+
+user delete api hinzugefügt

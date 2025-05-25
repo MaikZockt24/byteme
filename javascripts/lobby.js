@@ -202,7 +202,7 @@ async function deleteAccount(event) {
     if (confirm("Möchtest du dein Konto wirklich löschen? Dies kann nicht rückgängig gemacht werden.")) {
         showLoadingAnimation();
         try {
-            const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/user/delete', {
+            const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/delete', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
