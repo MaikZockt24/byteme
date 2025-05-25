@@ -15,7 +15,7 @@ body {
     height: 80px;
     animation: flicker 6s infinite;
     transition: top 0.5s ease, left 0.5s ease, opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1; /* Symbole im Hintergrund */
+    z-index: 1; /* Hintergrund */
 }
 
 @keyframes flicker {
@@ -33,7 +33,6 @@ body {
     100% { transform: scale(1); }
 }
 
-/* Menü-Button & Dropdown wie in der Lobby */
 .menu-button {
     position: absolute;
     top: 10px;
@@ -67,7 +66,6 @@ body {
     background: #444;
 }
 
-/* GameRoom-Container */
 .game-room-container {
     position: absolute;
     top: 50%;
@@ -81,11 +79,9 @@ body {
     gap: 20px;
     width: 90%;
     max-width: 1000px;
-    z-index: 2; /* Container über den Symbolen */
-    position: relative; /* Für z-index erforderlich */
+    z-index: 2; /* Über den Symbolen */
 }
 
-/* TicTacToe-Brett */
 .board {
     display: grid;
     grid-template-columns: repeat(3, 100px);
@@ -110,7 +106,6 @@ body {
     background: #555555;
 }
 
-/* Chat-Bereich */
 .chat-container {
     flex: 1;
     display: flex;

@@ -1,268 +1,146 @@
-let rooms = [];
+// Symbole-Animation
+const NUM_SYMBOLS = 40;
+const symbols = [];
+const symbolFiles = ["../images/kreuz.png", "../images/kringel.png"];
 
-function showCreateGameModal() {
-    document.getElementById("createGameModal").style.display = "block";
+for (let i = 0; i < NUM_SYMBOLS; i++) {
+    const img = document.createElement("img");
+    img.src = symbolFiles[Math.floor(Math.random() * 2)];
+    img.className = "symbol";
+    img.style.top = `${Math.random() * 90}vh`; // Begrenze Bewegungsbereich
+    img.style.left = `${Math.random() * 90}vw`; // Begrenze Bewegungsbereich
+    img.style.animationDelay = `${Math.random() * 5}s`;
+    document.body.appendChild(img);
+    symbols.push(img);
 }
 
-async function createNewGame() {
-    const gameName = document.getElementById("gameName").value;
-    const joinCode = document.getElementById("joinCode").value.toUpperCase();
-
-    if (!gameName || !joinCode || joinCode.length < 6) {
-        alert("Bitte gib einen gültigen Spielnamen und einen Join-Code (mind. 6 Zeichen) ein.");
-        return;
+// Symbole-Bewegung wie in der Lobby
+function swapPositions() {
+    const indexA = Math.floor(Math.random() * symbols.length);
+    let indexB = Math.floor(Math.random() * symbols.length);
+    while (indexA === indexB) {
+        indexB = Math.floor(Math.random() * symbols.length);
     }
-
-    const token = localStorage.getItem("jwtToken");
-    if (!token) {
-        alert("Bitte melde dich zuerst an.");
-        window.location.href = "login.html";
-        return;
-    }
-
-    showLoadingAnimation();
-    try {
-        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ name: gameName, code: joinCode, maxPlayers: 2 })
-        });
-
-        if (!response.ok) {
-            if (response.status === 401) {
-                alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
-                localStorage.removeItem("jwtToken");
-                window.location.href = "login.html";
-                return;
-            }
-            throw new Error("Fehler beim Erstellen des Spiels: " + response.statusText);
-        }
-
-        const newRoom = await response.json();
-        rooms.push({ name: gameName, code: joinCode, players: 1, maxPlayers: 2 });
-        updateRoomList();
-        document.getElementById("createGameModal").style.display = "none";
-        document.getElementById("gameName").value = "";
-        document.getElementById("joinCode").value = "";
-        hideLoadingAnimation();
-        window.location.href = "gameRoom.html";
-    } catch (error) {
-        hideLoadingAnimation();
-        alert(error.message);
-    }
+    const a = symbols[indexA];
+    const b = symbols[indexB];
+    a.classList.add("teleport");
+    b.classList.add("teleport");
+    setTimeout(() => {
+        a.classList.remove("teleport");
+        b.classList.remove("teleport");
+    }, 300);
+    const tempTop = a.style.top;
+    const tempLeft = a.style.left;
+    a.style.top = b.style.top;
+    a.style.left = b.style.left;
+    b.style.top = tempTop;
+    b.style.left = tempLeft;
 }
 
-function showJoinGameModal(element) {
-    document.getElementById("joinGameModal").style.display = "block";
-    document.getElementById("joinGameModal").dataset.selectedRoomCode = element.dataset.code;
+setInterval(swapPositions, 500);
+
+setInterval(() => {
+    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+    randomSymbol.classList.add("teleport");
+    setTimeout(() => {
+        randomSymbol.classList.remove("teleport");
+    }, 300);
+    randomSymbol.style.top = `${Math.random() * 90}vh`; // Begrenze Bewegungsbereich
+    randomSymbol.style.left = `${Math.random() * 90}vw`; // Begrenze Bewegungsbereich
+}, 1500);
+
+// URL-Parameter auslesen
+const params = new URLSearchParams(window.location.search);
+const gameId = parseInt(params.get('gameId'), 10);
+const token = localStorage.getItem("jwtToken");
+
+if (!token) {
+    alert("Bitte melde dich zuerst an.");
+    window.location.href = "login.html";
 }
 
-async function joinGame() {
-    const joinCodeInput = document.getElementById("joinCodeInput").value.toUpperCase();
-    const selectedRoomCode = document.getElementById("joinGameModal").dataset.selectedRoomCode;
-
-    if (!joinCodeInput) {
-        alert("Bitte gib einen Join-Code ein.");
-        return;
-    }
-
-    const token = localStorage.getItem("jwtToken");
-    if (!token) {
-        alert("Bitte melde dich zuerst an.");
-        window.location.href = "login.html";
-        return;
-    }
-
-    showLoadingAnimation();
-    try {
-        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/join', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ code: joinCodeInput })
-        });
-
-        if (!response.ok) {
-            if (response.status === 401) {
-                alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
-                localStorage.removeItem("jwtToken");
-                window.location.href = "login.html";
-                return;
-            }
-            throw new Error("Fehler beim Beitreten: " + response.statusText);
-        }
-
-        const room = rooms.find(r => r.code === selectedRoomCode);
-        if (room && room.code === joinCodeInput) {
-            if (room.players < room.maxPlayers) {
-                room.players++;
-                document.getElementById("joinGameModal").style.display = "none";
-                document.getElementById("joinCodeInput").value = "";
-                hideLoadingAnimation();
-                if (room.players === 2) {
-                    alert("Das Spiel kann beginnen! (Host: " + room.host + ")");
-                } else {
-                    alert("Du bist dem Spiel beigetreten! Spieler: " + room.players + "/2");
-                }
-                window.location.href = "gameRoom.html";
-            } else {
-                hideLoadingAnimation();
-                alert("Das Spiel ist bereits voll (max. 2 Spieler).");
-            }
-        } else {
-            hideLoadingAnimation();
-            alert("Ungültiger Join-Code.");
-        }
-    } catch (error) {
-        hideLoadingAnimation();
-        alert(error.message);
-    }
-}
-
-function updateRoomList() {
-    const roomList = document.getElementById("roomList");
-    roomList.innerHTML = "";
-    rooms.forEach(room => {
-        const li = document.createElement("li");
-        li.textContent = `${room.name} (by ${room.host}) - ${room.players}/2`;
-        li.dataset.code = room.code;
-        li.onclick = () => showJoinGameModal(li);
-        roomList.appendChild(li);
-    });
-}
-
-function showLoadingAnimation() {
-    const overlay = document.getElementById("loadingOverlay");
-    overlay.style.display = "flex";
-}
-
-function hideLoadingAnimation() {
-    const overlay = document.getElementById("loadingOverlay");
-    overlay.style.display = "none";
-}
-
-async function loadOpenGames() {
-    showLoadingAnimation();
-    try {
-        const token = localStorage.getItem("jwtToken");
-        if (!token) {
-            window.location.href = "login.html";
-            return;
-        }
-
-        const resp = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/lobby', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        if (!resp.ok) throw new Error(`Fehler beim Laden der Lobby: ${resp.statusText}`);
-        const games = await resp.json();
-        
-        // Liste zurücksetzen
-        const roomList = document.getElementById("roomList");
-        roomList.innerHTML = '';
-
-        // Räume in das bestehende Format umwandeln
-        rooms = games.map(game => ({
-            name: game.name || `Raum ${game.gameId}`,
-            code: game.code,
-            host: game.host || "Unknown",
-            players: game.playerCount,
-            maxPlayers: game.maxPlayers || 2
-        }));
-        updateRoomList();
-    } catch (error) {
-        console.error(error);
-        alert(error.message);
-    } finally {
-        hideLoadingAnimation();
-    }
-}
-
-// Beim Laden der Seite direkt einmal anfragen und alle 5 Sekunden wiederholen
-window.addEventListener('load', () => {
-    loadOpenGames();
-    setInterval(loadOpenGames, 5000);
-});
-
+// Menü umschalten
 function toggleMenu() {
     const dropdown = document.getElementById("menuDropdown");
     dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 }
 
-async function logout(event) {
+// Spiel verlassen
+async function leaveGame(event) {
     event.preventDefault();
-    const token = localStorage.getItem("jwtToken");
-    if (!token) {
-        window.location.href = "login.html";
-        return;
-    }
-
     try {
-        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/logout', {
+        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/leave', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            body: JSON.stringify({ gameId })
         });
-
-        if (!response.ok) {
-            throw new Error("Fehler beim Logout: " + response.statusText);
-        }
-
-        localStorage.removeItem("jwtToken");
-        window.location.href = "login.html";
+        if (!response.ok) throw new Error("Fehler beim Verlassen des Spiels: " + response.statusText);
+        window.location.href = "lobby.html";
     } catch (error) {
         alert(error.message);
-        localStorage.removeItem("jwtToken");
-        window.location.href = "login.html";
     }
 }
 
-async function deleteAccount(event) {
-    event.preventDefault();
-    const token = localStorage.getItem("jwtToken");
-    if (!token) {
-        alert("Bitte melde dich zuerst an.");
-        window.location.href = "login.html";
-        return;
-    }
-
-    if (confirm("Möchtest du dein Konto wirklich löschen? Dies kann nicht rückgängig gemacht werden.")) {
-        showLoadingAnimation();
-        try {
-            const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/delete', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
-                    localStorage.removeItem("jwtToken");
-                    window.location.href = "login.html";
-                    return;
-                }
-                throw new Error("Fehler beim Löschen des Kontos: " + response.statusText);
+// Brett initialisieren
+const boardEl = document.getElementById("board");
+for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.dataset.row = r;
+        cell.dataset.col = c;
+        cell.addEventListener("click", async () => {
+            if (cell.textContent) return; // schon besetzt
+            try {
+                const resp = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/move', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ gameId, row: r, column: c })
+                });
+                if (!resp.ok) throw new Error("Zug nicht möglich: " + resp.statusText);
+                cell.textContent = 'X';
+            } catch (e) {
+                alert(e.message);
             }
-
-            localStorage.removeItem("jwtToken");
-            hideLoadingAnimation();
-            window.location.href = "login.html";
-        } catch (error) {
-            hideLoadingAnimation();
-            alert(error.message);
-        }
+        });
+        boardEl.appendChild(cell);
     }
+}
+
+// Chat-Logik
+const chatMessagesEl = document.getElementById("chatMessages");
+
+async function sendChat() {
+    const text = document.getElementById("chatInput").value.trim();
+    if (!text) return;
+    try {
+        const resp = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ gameId, text })
+        });
+        if (!resp.ok) throw new Error("Nachricht konnte nicht gesendet werden: " + resp.statusText);
+        const chatMsg = await resp.json();
+        appendChatMessage("Du", chatMsg.text);
+        document.getElementById("chatInput").value = "";
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+function appendChatMessage(user, text) {
+    const msgEl = document.createElement("div");
+    msgEl.className = "message";
+    msgEl.innerHTML = `<strong>${user}:</strong> ${text}`;
+    chatMessagesEl.appendChild(msgEl);
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
 }

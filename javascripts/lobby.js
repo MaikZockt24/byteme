@@ -146,34 +146,30 @@ function hideLoadingAnimation() {
     overlay.style.display = "none";
 }
 
-async function fetchRoomsFromServer() {
-    const token = localStorage.getItem("jwtToken");
-    if (!token) {
-        window.location.href = "login.html";
-        return;
-    }
-
+async function loadOpenGames() {
+    showLoadingAnimation();
     try {
-        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/lobby', {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const resp = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/lobby', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!resp.ok) throw new Error(`Fehler beim Laden der Lobby: ${resp.statusText}`);
+        const games = await resp.json();
+        
+        // Liste zurücksetzen
+        const roomList = document.getElementById("roomList");
+        roomList.innerHTML = '';
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
-                localStorage.removeItem("jwtToken");
-                window.location.href = "login.html";
-                return;
-            }
-            throw new Error("Fehler beim Laden der Lobby: " + response.statusText);
-        }
-
-        const games = await response.json();
-        // Annahme: API gibt ein Array von Spielen zurück, z. B. [{ gameId, name, code, host, playerCount, maxPlayers }]
+        // Räume in das bestehende Format umwandeln
         rooms = games.map(game => ({
             name: game.name || `Raum ${game.gameId}`,
             code: game.code,
@@ -183,27 +179,18 @@ async function fetchRoomsFromServer() {
         }));
         updateRoomList();
     } catch (error) {
+        console.error(error);
         alert(error.message);
+    } finally {
+        hideLoadingAnimation();
     }
 }
 
-window.onclick = function(event) {
-    const modals = document.getElementsByClassName("modal");
-    for (let modal of modals) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-            document.getElementById("gameName").value = "";
-            document.getElementById("joinCode").value = "";
-            document.getElementById("joinCodeInput").value = "";
-        }
-    }
-    const dropdown = document.getElementById("menuDropdown");
-    if (event.target.className !== "menu-button" && !dropdown.contains(event.target)) {
-        dropdown.style.display = "none";
-    }
-}
-
-fetchRoomsFromServer();
+// Beim Laden der Seite direkt einmal anfragen und alle 5 Sekunden wiederholen
+window.addEventListener('load', () => {
+    loadOpenGames();
+    setInterval(loadOpenGames, 5000);
+});
 
 function toggleMenu() {
     const dropdown = document.getElementById("menuDropdown");
