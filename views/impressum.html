@@ -66,6 +66,7 @@
 </head>
 <body>
   <div class="impressum-container">
+    <div class="secret-button" onclick="showMessage()"></div>
     <h1>Impressum</h1>
     <p><strong>Verantwortlich für den Inhalt:</strong><br>
     Maik Feichtmeyer, Andrei Jitianu, Mikka Kehl, Julian Lipfert Martin<br>
@@ -132,6 +133,10 @@
         randomSymbol.style.top = `${Math.random() * 100}vh`;
         randomSymbol.style.left = `${Math.random() * 100}vw`;
     }, 1500);
+
+    function showMessage() {
+        alert("Danke für deine ganze Hilfe Dominik :)");
+    }
   </script>
 </body>
 </html>

@@ -18,3 +18,5 @@ Logout und konto löschen button zur lobby seite hinzugefügt
 user delete api hinzugefügt
 
 token löschen für logut und user löschen
+
+secret button hinzugefügt hehe
