@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spielraum</title>
+  <link rel="stylesheet" href="../stylesheets/gameRoom.css">
+</head>
+<body>
+  <!-- Menü-Button -->
+  <div class="menu-button" onclick="toggleMenu()">☰</div>
+  <div id="menuDropdown" class="menu-dropdown">
+    <a href="#" onclick="leaveGame(event)">Verlassen</a>
+  </div>
+
+  <!-- Hauptbereich mit Brett & Chat -->
+  <div class="game-room-container">
+    <div class="board" id="board"></div>
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Nachricht eingeben">
+        <button onclick="sendChat()">Senden</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../javascripts/gameRoom.js"></script>
+</body>
+</html>

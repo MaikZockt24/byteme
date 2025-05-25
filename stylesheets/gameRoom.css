@@ -1,0 +1,163 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: url("../images/hintergrund.png") no-repeat center center fixed;
+    background-size: cover;
+    overflow: hidden;
+    position: relative;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+}
+
+.symbol {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    animation: flicker 6s infinite;
+    transition: top 0.5s ease, left 0.5s ease, opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1; /* Symbole im Hintergrund */
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    45%, 55% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.teleport {
+    animation: teleport 0.3s ease;
+}
+
+@keyframes teleport {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); opacity: 0.7; }
+    100% { transform: scale(1); }
+}
+
+/* Menü-Button & Dropdown wie in der Lobby */
+.menu-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+    color: #fff;
+    z-index: 1001;
+}
+
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    background: #2a2a2a;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.menu-dropdown a {
+    display: block;
+    padding: 10px 20px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.menu-dropdown a:hover {
+    background: #444;
+}
+
+/* GameRoom-Container */
+.game-room-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2a2a2a;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    gap: 20px;
+    width: 90%;
+    max-width: 1000px;
+    z-index: 2; /* Container über den Symbolen */
+    position: relative; /* Für z-index erforderlich */
+}
+
+/* TicTacToe-Brett */
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 10px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background: #444444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    cursor: pointer;
+    border-radius: 5px;
+    user-select: none;
+}
+
+.cell:hover {
+    background: #555555;
+}
+
+/* Chat-Bereich */
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: 320px;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    background: #333333;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.message {
+    margin-bottom: 8px;
+    padding: 5px;
+    background: #2a2a2a;
+    border-radius: 3px;
+    color: #ffffff;
+}
+
+.chat-input {
+    display: flex;
+    margin-top: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #555555;
+    border-radius: 5px;
+    background: #444444;
+    color: #ffffff;
+    margin-right: 5px;
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    background: #555555;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background: #666666;
+}
