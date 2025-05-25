@@ -10,3 +10,5 @@ Testen mit credentials: 'include'
 Impressum wurde hinzugefügt
 
 Backround wurde zum impressum hinzugefügt
+
+Mailto: wurde zu den E-Mail links hinzugefügt
