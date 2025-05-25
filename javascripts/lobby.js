@@ -147,7 +147,6 @@ function hideLoadingAnimation() {
     overlay.style.display = "none";
 }
 
-// Simulierte Funktion für API-Abfrage
 function fetchRoomsFromServer() {
     const simulatedRooms = [
         { name: "Room A", code: "CODE001", host: "UserX", players: 1, maxPlayers: 2 },
@@ -157,7 +156,6 @@ function fetchRoomsFromServer() {
     updateRoomList();
 }
 
-// Schließe das Modal, wenn man außerhalb klickt
 window.onclick = function(event) {
     const modals = document.getElementsByClassName("modal");
     for (let modal of modals) {
@@ -168,17 +166,14 @@ window.onclick = function(event) {
             document.getElementById("joinCodeInput").value = "";
         }
     }
-    // Schließe das Menü-Dropdown, wenn außerhalb geklickt wird
     const dropdown = document.getElementById("menuDropdown");
     if (event.target.className !== "menu-button" && !dropdown.contains(event.target)) {
         dropdown.style.display = "none";
     }
 }
 
-// Initiale Raumliste laden
 fetchRoomsFromServer();
 
-// Menü-Funktionen
 function toggleMenu() {
     const dropdown = document.getElementById("menuDropdown");
     dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
@@ -186,8 +181,32 @@ function toggleMenu() {
 
 async function logout(event) {
     event.preventDefault();
-    localStorage.removeItem("jwtToken");
-    window.location.href = "login.html";
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const response = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Fehler beim Logout: " + response.statusText);
+        }
+
+        localStorage.removeItem("jwtToken");
+        window.location.href = "login.html";
+    } catch (error) {
+        alert(error.message);
+        localStorage.removeItem("jwtToken");
+        window.location.href = "login.html";
+    }
 }
 
 async function deleteAccount(event) {
