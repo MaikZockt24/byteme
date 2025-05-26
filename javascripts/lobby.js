@@ -143,13 +143,13 @@ async function joinGame() {
 
 function updateRoomList() {
     const roomList = document.getElementById("roomList");
-    roomList.innerHTML = "";
+    roomList.innerHTML = ""; //leert bisherige Kinder um Liste neu zu befüllen
     rooms.forEach(room => {
         const li = document.createElement("li");
         li.textContent = `${room.name} (by ${room.host}) - ${room.players}/2`;
         li.dataset.code = room.code;
         li.onclick = () => showJoinGameModal(li);
-        roomList.appendChild(li);
+        roomList.appendChild(li);//fügt nun li elemnt zu roomList hinzu
     });
 }
 
@@ -186,8 +186,8 @@ async function loadOpenGames() {
         const roomList = document.getElementById("roomList");
         roomList.innerHTML = '';
 
-        rooms = games.map(game => ({
-            name: game.name || `Raum ${game.gameId}`,
+        rooms = games.map(game => ({//wandelt jedes Elemt in ein neues um und gibt ein neues Array zurück
+            name: game.name || `Raum ${game.gameId}`, //Eigenschaften des neuen Objekts
             code: game.password,
             players: game.playerCount,
             maxPlayers: game.maxPlayers || 2
@@ -216,7 +216,7 @@ function toggleMenu() {
 }
 
 async function logout(event) {
-    event.preventDefault();
+    event.preventDefault();//wegen Token
     const token = localStorage.getItem("jwtToken");
     if (!token) {
         window.location.href = "login.html";
