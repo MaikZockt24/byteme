@@ -22,3 +22,5 @@ token löschen für logut und user löschen
 secret button hinzugefügt hehe
 
 es ist 2:32 Uhr Nachts wir geben uns geschlagen für jetzt
+
+Andrei ich hab dir noch paar kommentare da gelassen, bei meinem code falls du dir anschauen willst im javascript

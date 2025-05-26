@@ -71,10 +71,10 @@ try {
         },
         body: JSON.stringify(loginData)
     });
-console.error(response)
+console.log(response)
     if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("jwtToken", data.token); // JWT-Token speichern
+        const data = await response.json(); //Wandelt Server Antwort in JSON um
+        localStorage.setItem("jwtToken", data.token); // JSON WEB Token speichern
         window.location.href = "lobby.html";
     } else {
         const error = await response.json();

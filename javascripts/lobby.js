@@ -35,7 +35,7 @@ async function createNewGame() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}` // Standard HTTP Header
             },
             body: JSON.stringify({ name: gameName, code: joinCode, maxPlayers: 2 })
         });
@@ -114,7 +114,7 @@ async function joinGame() {
             localStorage.setItem("gameId", joinResponse.gameId);
         }
 
-        const room = rooms.find(r => r.code === selectedRoomCode);
+        const room = rooms.find(r => r.code === selectedRoomCode);//r ist Platzhalter und => arrowfunktion
         if (room && room.code === joinCodeInput) {
             if (room.players < room.maxPlayers) {
                 room.players++;

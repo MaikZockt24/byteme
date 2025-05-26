@@ -79,7 +79,7 @@ async function handleResetPassword() {
     });
 
     if (response.ok) {
-        const data = await response.json();
+        const data = await response.json(); //Wandelt Server Antwort in JSON um
         alert("Passwort erfolgreich geändert! Du wirst zum Login weitergeleitet.");
         window.location.href = "login.html"; // Zurück zur Login-Seite
     } else {

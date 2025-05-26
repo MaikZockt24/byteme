@@ -80,7 +80,7 @@ try {
 
     if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("jwtToken", data.token); // JWT-Token speichern
+        localStorage.setItem("jwtToken", data.token); // JSON WEB Token speichern
         window.location.href = "lobby.html";
     } else {
         const error = await response.json();
