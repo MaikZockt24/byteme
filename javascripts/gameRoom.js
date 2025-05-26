@@ -50,8 +50,8 @@ setInterval(() => {
 }, 1500);
 
 // URL-Parameter auslesen
-const params = new URLSearchParams(window.location.search);
-const gameId = parseInt(params.get('gameId'), 10);
+//const params = new URLSearchParams(window.location.search);
+const gameId = localStorage.getItem("gameId");
 const token = localStorage.getItem("jwtToken");
 
 if (!token) {
@@ -118,6 +118,7 @@ const chatMessagesEl = document.getElementById("chatMessages");
 
 async function sendChat() {
     const text = document.getElementById("chatInput").value.trim();
+    //console.log(params);
     if (!text) return;
     try {
         const resp = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/chat', {
@@ -129,8 +130,9 @@ async function sendChat() {
             body: JSON.stringify({ gameId, text })
         });
         if (!resp.ok) throw new Error("Nachricht konnte nicht gesendet werden: " + resp.statusText);
-        const chatMsg = await resp.json();
-        appendChatMessage("Du", chatMsg.text);
+        const data = await resp.json();
+        appendChatMessage("Du", data.text);
+        //console.log(data);
         document.getElementById("chatInput").value = "";
     } catch (e) {
         alert(e.message);
@@ -144,3 +146,34 @@ function appendChatMessage(user, text) {
     chatMessagesEl.appendChild(msgEl);
     chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
 }
+
+let displayedIds = new Set();
+
+async function fetchChatHistory() {
+  try {
+    const resp = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/chat/history?gameId=${gameId}', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ gameId })
+    });
+    if (!resp.ok) throw new Error(resp.statusText);
+    const msgs = await resp.json();
+
+    msgs.forEach(msg => {
+      if (!displayedIds.has(msg.id)) {
+        appendChatMessage(msg.user, msg.text);
+        displayedIds.add(msg.id);
+      }
+    });
+  } catch (e) {
+    console.error('Chat-History Error:', e);
+  }
+}
+
+window.addEventListener('load', () => {
+  fetchChatHistory();                 // gleich beim Laden
+  setInterval(fetchChatHistory, 5000); // alle 5 Sekunden wiederholen
+});

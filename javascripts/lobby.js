@@ -42,6 +42,10 @@ async function createNewGame() {
         }
 
         const newRoom = await response.json();
+        // Annahme: Die API gibt eine gameId zurück, z. B. { gameId: 123, ... }
+        if (newRoom.gameId) {
+            localStorage.setItem("gameId", newRoom.gameId); // gameId speichern
+        }
         rooms.push({ name: gameName, code: joinCode, players: 1, maxPlayers: 2 });
         updateRoomList();
         document.getElementById("createGameModal").style.display = "none";
@@ -95,6 +99,12 @@ async function joinGame() {
                 return;
             }
             throw new Error("Fehler beim Beitreten: " + response.statusText);
+        }
+
+        const joinResponse = await response.json();
+        // Annahme: Die API gibt eine gameId zurück, z. B. { gameId: 123, ... }
+        if (joinResponse.gameId) {
+            localStorage.setItem("gameId", joinResponse.gameId); // gameId speichern
         }
 
         const room = rooms.find(r => r.code === selectedRoomCode);
@@ -165,11 +175,9 @@ async function loadOpenGames() {
         if (!resp.ok) throw new Error(`Fehler beim Laden der Lobby: ${resp.statusText}`);
         const games = await resp.json();
         
-        // Liste zurücksetzen
         const roomList = document.getElementById("roomList");
         roomList.innerHTML = '';
 
-        // Räume in das bestehende Format umwandeln
         rooms = games.map(game => ({
             name: game.name || `Raum ${game.gameId}`,
             code: game.code,
@@ -186,10 +194,9 @@ async function loadOpenGames() {
     }
 }
 
-// Beim Laden der Seite direkt einmal anfragen und alle 5 Sekunden wiederholen
 window.addEventListener('load', () => {
     loadOpenGames();
-    setInterval(loadOpenGames, 5000);
+    setInterval(loadOpenGames, 50000000);
 });
 
 function toggleMenu() {
@@ -219,10 +226,12 @@ async function logout(event) {
         }
 
         localStorage.removeItem("jwtToken");
+        localStorage.removeItem("gameId"); // gameId entfernen
         window.location.href = "login.html";
     } catch (error) {
         alert(error.message);
         localStorage.removeItem("jwtToken");
+        localStorage.removeItem("gameId"); // gameId entfernen
         window.location.href = "login.html";
     }
 }
@@ -251,6 +260,7 @@ async function deleteAccount(event) {
                 if (response.status === 401) {
                     alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
                     localStorage.removeItem("jwtToken");
+                    localStorage.removeItem("gameId"); // gameId entfernen
                     window.location.href = "login.html";
                     return;
                 }
@@ -258,6 +268,7 @@ async function deleteAccount(event) {
             }
 
             localStorage.removeItem("jwtToken");
+            localStorage.removeItem("gameId"); // gameId entfernen
             hideLoadingAnimation();
             window.location.href = "login.html";
         } catch (error) {
