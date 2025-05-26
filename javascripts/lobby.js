@@ -1,7 +1,16 @@
 let rooms = [];
 
 function showCreateGameModal() {
-    document.getElementById("createGameModal").style.display = "block";
+    const modal = document.getElementById("createGameModal");
+    modal.style.display = "block";
+}
+
+function closeCreateGameModal(event) {
+    const modal = document.getElementById("createGameModal");
+    // Schließen, wenn der Klick auf das Overlay (.modal) und nicht auf den Inhalt (.modal-content) erfolgt
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
 }
 
 async function createNewGame() {
@@ -42,9 +51,8 @@ async function createNewGame() {
         }
 
         const newRoom = await response.json();
-        // Annahme: Die API gibt eine gameId zurück, z. B. { gameId: 123, ... }
         if (newRoom.gameId) {
-            localStorage.setItem("gameId", newRoom.gameId); // gameId speichern
+            localStorage.setItem("gameId", newRoom.gameId);
         }
         rooms.push({ name: gameName, code: joinCode, players: 1, maxPlayers: 2 });
         updateRoomList();
@@ -102,9 +110,8 @@ async function joinGame() {
         }
 
         const joinResponse = await response.json();
-        // Annahme: Die API gibt eine gameId zurück, z. B. { gameId: 123, ... }
         if (joinResponse.gameId) {
-            localStorage.setItem("gameId", joinResponse.gameId); // gameId speichern
+            localStorage.setItem("gameId", joinResponse.gameId);
         }
 
         const room = rooms.find(r => r.code === selectedRoomCode);
@@ -170,7 +177,8 @@ async function loadOpenGames() {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            body: JSON.stringify({code: gameId })
         });
         if (!resp.ok) throw new Error(`Fehler beim Laden der Lobby: ${resp.statusText}`);
         const games = await resp.json();
@@ -180,8 +188,7 @@ async function loadOpenGames() {
 
         rooms = games.map(game => ({
             name: game.name || `Raum ${game.gameId}`,
-            code: game.code,
-            host: game.host || "Unknown",
+            code: game.password,
             players: game.playerCount,
             maxPlayers: game.maxPlayers || 2
         }));
@@ -197,6 +204,10 @@ async function loadOpenGames() {
 window.addEventListener('load', () => {
     loadOpenGames();
     setInterval(loadOpenGames, 50000000);
+
+    // Event-Listener für Klicks außerhalb des Modals
+    const createGameModal = document.getElementById("createGameModal");
+    createGameModal.addEventListener("click", closeCreateGameModal);
 });
 
 function toggleMenu() {
@@ -226,12 +237,12 @@ async function logout(event) {
         }
 
         localStorage.removeItem("jwtToken");
-        localStorage.removeItem("gameId"); // gameId entfernen
+        localStorage.removeItem("gameId");
         window.location.href = "login.html";
     } catch (error) {
         alert(error.message);
         localStorage.removeItem("jwtToken");
-        localStorage.removeItem("gameId"); // gameId entfernen
+        localStorage.removeItem("gameId");
         window.location.href = "login.html";
     }
 }
@@ -260,7 +271,7 @@ async function deleteAccount(event) {
                 if (response.status === 401) {
                     alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
                     localStorage.removeItem("jwtToken");
-                    localStorage.removeItem("gameId"); // gameId entfernen
+                    localStorage.removeItem("gameId");
                     window.location.href = "login.html";
                     return;
                 }
@@ -268,7 +279,7 @@ async function deleteAccount(event) {
             }
 
             localStorage.removeItem("jwtToken");
-            localStorage.removeItem("gameId"); // gameId entfernen
+            localStorage.removeItem("gameId");
             hideLoadingAnimation();
             window.location.href = "login.html";
         } catch (error) {

@@ -49,8 +49,6 @@ setInterval(() => {
     randomSymbol.style.left = `${Math.random() * 90}vw`; // Begrenze Bewegungsbereich
 }, 1500);
 
-// URL-Parameter auslesen
-//const params = new URLSearchParams(window.location.search);
 const gameId = localStorage.getItem("gameId");
 const token = localStorage.getItem("jwtToken");
 
@@ -118,7 +116,6 @@ const chatMessagesEl = document.getElementById("chatMessages");
 
 async function sendChat() {
     const text = document.getElementById("chatInput").value.trim();
-    //console.log(params);
     if (!text) return;
     try {
         const resp = await fetch('https://iu-tomcat.servicecluster.de/byteme/api/game/chat', {
