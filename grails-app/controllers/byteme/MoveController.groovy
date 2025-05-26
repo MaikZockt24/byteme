@@ -3,17 +3,30 @@ package byteme
 import grails.rest.*
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import byteme.JWTUtil 
 
 @Transactional
 class MoveController {
     static responseFormats = ['json']
     GameService gameService
 
-    // Spielzug (move)
+    // Helper-Methode für JWT
+    private Long getUserIdFromRequest() {
+        def authHeader = request.getHeader("Authorization")
+        if (authHeader?.startsWith("Bearer ")) {
+            def token = authHeader.substring(7)
+            def userId = JWTUtil.getUserIdFromToken(token)
+            return userId
+        }
+        return null
+    }
+
+    // Spielzug
     def move() {
-       try {
+        try {
             def json = request.JSON
-            def user = User.get(session.userId)
+            def userId = getUserIdFromRequest()
+            def user = User.get(userId)
             if (!user) {
                 render status: 403, json: [error: "Nicht authentifiziert"]
                 return
@@ -22,26 +35,24 @@ class MoveController {
             log.debug "Move-Request: gameId=${json.gameId}, row=${json.row}, column=${json.column}, user=${user.id}"
 
             def move = gameService.makeMove(
-                 json.gameId as Long,
-                 user,
-                 json.row    as Integer,
-                 json.column as Integer
+                json.gameId as Long,
+                user,
+                json.row    as Integer,
+                json.column as Integer
             )
             log.debug "makeMove returned: $move"
 
             if (!move) {
-                render status: 400, json: [error: "Ungültiger Zug"]
+                json.status = 400
+                render ([error: "Ungültiger Zug"] as JSON)
             } else {
-                render status: 201, json: [
-                    gameId:  move.game.id,
-                    userId:  move.user.id,
-                    row:     move.row,
-                    column:  move.column
-                ]
+                json.status = 201
+                render ([gameId:  move.game.id, userId:  move.user.id, row:     move.row, column:  move.column] as JSON)
             }
         } catch (Exception e) {
             log.error("Fehler beim Zug anlegen", e)
-            render status: 500, json: [error: e.message]
+            response.status = 500
+            render ([error: e.message] as JSON)
         }
     }
 }

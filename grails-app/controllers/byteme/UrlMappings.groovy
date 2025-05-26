@@ -25,6 +25,8 @@ class UrlMappings {
         // Spielzug & Chat (REST-Alternative zu WebSocket)
         "/api/game/move"(controller: "move", action: "move")
         "/api/game/chat"(controller: "chat", action: "chat")
+        "/api/game/chat/history"(controller: "chat", action: "history")
+
 
         // Fehlerseiten (optional)
         "/"(view:"/index")
