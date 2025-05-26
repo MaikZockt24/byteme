@@ -132,26 +132,23 @@ class UserController {
 
     // Account löschen
     def delete() {
+    // 1) Direkt auslesen
         def json = request.JSON
-        try {
-            if (!json.email) {
-                json.status = 400
-                render ([error: "E-Mail erforderlich"] as JSON)
-                return
-            }
-        } catch (Exception e) {
-            json.status = 400
-            render ([error: "Ungültige Anfrage: ${e.message}"] as JSON)
+    // 2) Validierung
+        if (!json?.email) {
+            response.status = 400
+            render([ error: "E-Mail erforderlich" ] as JSON)
             return
         }
+    // 3) Löschen
         def user = User.findByEmail(json.email)
         if (!user) {
-            json.status = 404
-            render ([error: "User nicht gefunden"] as JSON)
+            response.status = 404
+            render([ error: "User nicht gefunden" ] as JSON)
         } else {
             user.delete(flush: true)
-            json.status = 200
-            render ([message: "Account erfolgreich gelöscht"] as JSON)
+            response.status = 200
+            render([ message: "Account erfolgreich gelöscht" ] as JSON)
         }
     }
 }

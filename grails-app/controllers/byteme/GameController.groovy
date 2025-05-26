@@ -111,9 +111,14 @@ class GameController {
     // Übersicht offene Spiele (Lobby)
     def lobby() {
         def openGames = gameService.openGames()
-        json.status = 200
-        render (openGames.collect { game ->
-            [gameId: game.id, status: game.status, playerCount: game.players.size()]
-        } as JSON)
+        response.status = 200
+        render openGames.collect { game ->
+            [
+                gameId:      game.id,
+                name:        game.name ?: "Raum ${game.id}",
+                playerCount: game.players.size(),
+                status:      game.status
+            ] as JSON
+        }
     }
 }
