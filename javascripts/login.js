@@ -15,12 +15,12 @@ symbols.push(img);
 }
 
 function swapPositions() {
-const indexA = Math.floor(Math.random() * symbols.length);
+const indexA = Math.floor(Math.random() * symbols.length);//Zufälliges Symbol aus Symbols
 let indexB = Math.floor(Math.random() * symbols.length);
 while (indexA === indexB) {
     indexB = Math.floor(Math.random() * symbols.length);
 }
-const a = symbols[indexA];
+const a = symbols[indexA];//Holt die zwei Symbole an die gewählten Positionen
 const b = symbols[indexB];
 a.classList.add("teleport");
 b.classList.add("teleport");
@@ -78,7 +78,7 @@ console.log(response)
         window.location.href = "lobby.html";
     } else {
         const error = await response.json();
-        alert("Anmeldung fehlgeschlagen: " + (error.message || "Unbekannter Fehler"));
+        alert("Anmeldung fehlgeschlagen: " + (error.message || "Unbekannter Fehler"));//JSON Objekt mit Details 
     }
 } catch (error) {
     alert("Fehler bei der Anmeldung: " + error.message);

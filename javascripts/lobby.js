@@ -41,7 +41,7 @@ async function createNewGame() {
         });
 
         if (!response.ok) {
-            if (response.status === 401) {
+            if (response.status === 401) {//Abgelaufene Sitzung
                 alert("Sitzung abgelaufen. Bitte melde dich erneut an.");
                 localStorage.removeItem("jwtToken");
                 window.location.href = "login.html";
@@ -115,15 +115,15 @@ async function joinGame() {
         }
 
         const room = rooms.find(r => r.code === selectedRoomCode);//r ist Platzhalter und => arrowfunktion
-        if (room && room.code === joinCodeInput) {
+        if (room && room.code === joinCodeInput) {//Prüft auf Raumfindung und strikter Vergleich
             if (room.players < room.maxPlayers) {
                 room.players++;
                 document.getElementById("joinGameModal").style.display = "none";
                 document.getElementById("joinCodeInput").value = "";
                 hideLoadingAnimation();
-                if (room.players === 2) {
+                if (room.players === 2) {//Wenn 2 Spieler im Raum sind
                     alert("Das Spiel kann beginnen! (Host: " + room.host + ")");
-                } else {
+                } else {//Wenn weniger als 2 Spieler im Raum sind
                     alert("Du bist dem Spiel beigetreten! Spieler: " + room.players + "/2");
                 }
                 window.location.href = "gameRoom.html";
@@ -135,7 +135,7 @@ async function joinGame() {
             hideLoadingAnimation();
             alert("Ungültiger Join-Code.");
         }
-    } catch (error) {
+    } catch (error) {//Für Fehler aus dem Try-Block
         hideLoadingAnimation();
         alert(error.message);
     }
@@ -215,7 +215,7 @@ function toggleMenu() {
     dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 }
 
-async function logout(event) {
+async function logout(event) {//button 
     event.preventDefault();//wegen Token
     const token = localStorage.getItem("jwtToken");
     if (!token) {

@@ -15,12 +15,12 @@ symbols.push(img);
 }
 
 function swapPositions() {
-const indexA = Math.floor(Math.random() * symbols.length);
+const indexA = Math.floor(Math.random() * symbols.length);//Zwischen 0 und 39
 let indexB = Math.floor(Math.random() * symbols.length);
 while (indexA === indexB) {
     indexB = Math.floor(Math.random() * symbols.length);
 }
-const a = symbols[indexA];
+const a = symbols[indexA];//Holt die zwei Symbole an die gewählten Positionen
 const b = symbols[indexB];
 a.classList.add("teleport");
 b.classList.add("teleport");
@@ -39,7 +39,7 @@ b.style.left = tempLeft;
 setInterval(swapPositions, 500);
 
 setInterval(() => {
-const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];//Zufälliges Symbol aus Symbols
 randomSymbol.classList.add("teleport");
 setTimeout(() => {
     randomSymbol.classList.remove("teleport");
