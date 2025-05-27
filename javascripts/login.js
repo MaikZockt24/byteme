@@ -63,7 +63,7 @@ const loginData = {
     password: password
 };
 
-try {
+try {//fängt Fehler wie Exception ab
     const response = await fetch("https://iu-tomcat.servicecluster.de/byteme/api/login", {
         method: "POST",
         headers: {
