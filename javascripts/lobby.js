@@ -187,7 +187,7 @@ async function loadOpenGames() {
         roomList.innerHTML = '';
 
         rooms = games.map(game => ({//wandelt jedes Elemt in ein neues um und gibt ein neues Array zurück
-            name: game.name || `Raum ${game.gameId}`, //Eigenschaften des neuen Objekts
+            name: game.name || `Raum ${game.gameId}`, //Fallback falls game.name leer sein sollte
             code: game.password,
             players: game.playerCount,
             maxPlayers: game.maxPlayers || 2
@@ -216,7 +216,7 @@ function toggleMenu() {
 }
 
 async function logout(event) {//button 
-    event.preventDefault();//wegen Token
+    event.preventDefault();//wegen dem jwtToken
     const token = localStorage.getItem("jwtToken");
     if (!token) {
         window.location.href = "login.html";
